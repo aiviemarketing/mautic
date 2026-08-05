@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @extends AbstractType<mixed>
  */
-class EmailListType extends AbstractType
+final class EmailListType extends AbstractType
 {
     public function configureOptions(OptionsResolver $resolver): void
     {
@@ -32,7 +32,7 @@ class EmailListType extends AbstractType
 
                     return 'email:getLookupChoiceList&'.http_build_query($query);
                 },
-                'model_lookup_method' => 'getLookupResultsWithIdName',
+                'model_lookup_method' => 'getLookupResults',
                 'lookup_arguments'    => fn (Options $options): array => [
                     'type'    => 'email',
                     'filter'  => '$data',
@@ -56,7 +56,7 @@ class EmailListType extends AbstractType
         );
     }
 
-    public function getParent(): ?string
+    public function getParent(): string
     {
         return EntityLookupType::class;
     }

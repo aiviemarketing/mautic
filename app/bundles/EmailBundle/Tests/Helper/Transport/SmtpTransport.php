@@ -8,12 +8,12 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
 
-class SmtpTransport implements TransportInterface
+final class SmtpTransport implements TransportInterface
 {
     /**
      * @var array<string, mixed>
      */
-    private $transports = []; // @phpstan-ignore-line
+    private array $transports = []; // @phpstan-ignore-line
 
     public Email $sentMessage;
 

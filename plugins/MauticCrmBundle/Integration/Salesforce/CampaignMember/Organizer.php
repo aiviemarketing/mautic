@@ -5,7 +5,7 @@ namespace MauticPlugin\MauticCrmBundle\Integration\Salesforce\CampaignMember;
 use MauticPlugin\MauticCrmBundle\Integration\Salesforce\Object\Contact;
 use MauticPlugin\MauticCrmBundle\Integration\Salesforce\Object\Lead;
 
-class Organizer
+final class Organizer
 {
     /**
      * @var array<string, Lead>
@@ -18,7 +18,7 @@ class Organizer
     private array $contacts = [];
 
     public function __construct(
-        private array $records,
+        private readonly array $records,
     ) {
         $this->organize();
     }
@@ -26,7 +26,7 @@ class Organizer
     /**
      * @return array<string, Lead>
      */
-    public function getLeads()
+    public function getLeads(): array
     {
         return $this->leads;
     }
@@ -42,7 +42,7 @@ class Organizer
     /**
      * @return array<string, Contact>
      */
-    public function getContacts()
+    public function getContacts(): array
     {
         return $this->contacts;
     }
@@ -60,7 +60,7 @@ class Organizer
         foreach ($this->records as $campaignMember) {
             $object    = !empty($campaignMember['LeadId']) ? 'Lead' : 'Contact';
             $objectId  = !empty($campaignMember['LeadId']) ? $campaignMember['LeadId'] : $campaignMember['ContactId'];
-            $isDeleted = ($campaignMember['IsDeleted']) ? true : false;
+            $isDeleted = (bool) $campaignMember['IsDeleted'];
 
             switch ($object) {
                 case Lead::OBJECT:

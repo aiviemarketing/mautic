@@ -3,7 +3,7 @@
 namespace Mautic\StageBundle\Form\Type;
 
 use Mautic\StageBundle\Entity\Stage;
-use Mautic\StageBundle\Model\StageModel;
+use Mautic\StageBundle\Entity\StageRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -11,15 +11,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @extends AbstractType<Stage>
  */
-class StageListType extends AbstractType
+final class StageListType extends AbstractType
 {
     /**
      * @var array<string,int>
      */
     private array $choices = [];
 
-    public function __construct(private StageModel $stageModel)
-    {
+    public function __construct(
+        private readonly StageRepository $stageRepository,
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -33,7 +34,7 @@ class StageListType extends AbstractType
         ]);
     }
 
-    public function getParent(): ?string
+    public function getParent(): string
     {
         return ChoiceType::class;
     }
@@ -47,7 +48,7 @@ class StageListType extends AbstractType
             return $this->choices;
         }
 
-        $stages = $this->stageModel->getRepository()->getEntities([
+        $stages = $this->stageRepository->getEntities([
             'filter' => [
                 'force' => [
                     [

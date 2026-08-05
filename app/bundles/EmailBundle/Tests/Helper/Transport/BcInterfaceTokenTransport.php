@@ -9,43 +9,32 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
 
-class BcInterfaceTokenTransport implements TransportInterface
+final class BcInterfaceTokenTransport implements TransportInterface
 {
     /**
      * @var array<string, mixed>
      */
-    private $transports = []; // @phpstan-ignore-line
+    private array $transports = []; // @phpstan-ignore-line
 
     /**
      * @var string[]
      */
-    private $fromAddresses = [];
+    private array $fromAddresses = [];
 
     /**
      * @var string[]
      */
-    private $fromNames = [];
-
-    private $numberToFail;
+    private array $fromNames = [];
 
     /**
      * @var mixed[]
      */
     private array $metadatas = [];
 
-    /**
-     * @var RawMessage
-     */
-    private $message;
+    private ?RawMessage $message = null;
 
-    /**
-     * @param bool $validate
-     */
-    public function __construct(
-        private $validate = false,
-        $numberToFail = 1,
-    ) {
-        $this->numberToFail       = (int) $numberToFail;
+    public function __construct()
+    {
         $this->transports['main'] = $this;
     }
 

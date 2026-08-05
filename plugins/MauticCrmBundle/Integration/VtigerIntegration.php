@@ -2,10 +2,14 @@
 
 namespace MauticPlugin\MauticCrmBundle\Integration;
 
+use MauticPlugin\MauticCrmBundle\Api\VtigerApi;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 
+/**
+ * @extends CrmAbstractIntegration<VtigerApi>
+ */
 class VtigerIntegration extends CrmAbstractIntegration
 {
     private string $authorzationError = '';
@@ -95,17 +99,15 @@ class VtigerIntegration extends CrmAbstractIntegration
             }
 
             return false;
-        } else {
-            $error = $this->extractAuthKeys($response['result']);
-
-            if (empty($error)) {
-                return true;
-            } else {
-                $this->authorzationError = $error;
-
-                return false;
-            }
         }
+        $error = $this->extractAuthKeys($response['result']);
+
+        if (empty($error)) {
+            return true;
+        }
+        $this->authorzationError = $error;
+
+        return false;
     }
 
     public function getAuthLoginUrl(): string
@@ -132,7 +134,7 @@ class VtigerIntegration extends CrmAbstractIntegration
     /**
      * @return mixed[]
      */
-    public function getAvailableLeadFields($settings = []): array
+    public function getAvailableLeadFields(array $settings = []): array
     {
         $vTigerFields      = [];
         $silenceExceptions = $settings['silence_exceptions'] ?? true;

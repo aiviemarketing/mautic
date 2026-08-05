@@ -9,7 +9,7 @@ use Mautic\LeadBundle\Model\ListModel;
 use Mautic\PointBundle\Model\TriggerEventModel;
 use Mautic\ReportBundle\Model\ReportModel;
 
-class SegmentDependencies
+final readonly class SegmentDependencies
 {
     public function __construct(
         private EmailModel $emailModel,

@@ -5,9 +5,12 @@ namespace Mautic\ReportBundle\Security\Permissions;
 use Mautic\CoreBundle\Security\Permissions\AbstractPermissions;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class ReportPermissions extends AbstractPermissions
+final class ReportPermissions extends AbstractPermissions
 {
-    public function __construct($params)
+    /**
+     * @param mixed[] $params
+     */
+    public function __construct(array $params)
     {
         parent::__construct($params);
         $this->addExtendedPermissions('reports');

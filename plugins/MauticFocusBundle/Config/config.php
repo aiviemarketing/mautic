@@ -42,27 +42,6 @@ return [
         ],
     ],
 
-    'services' => [
-        'other' => [
-            'mautic.focus.helper.token' => [
-                'class'     => MauticPlugin\MauticFocusBundle\Helper\TokenHelper::class,
-                'arguments' => [
-                    'mautic.focus.model.focus',
-                    'router',
-                    'mautic.security',
-                ],
-            ],
-            'mautic.focus.helper.iframe_availability_checker' => [
-                'class'     => MauticPlugin\MauticFocusBundle\Helper\IframeAvailabilityChecker::class,
-                'arguments' => [
-                    'translator',
-                    'mautic.native.connector',
-                    'mautic.helper.core_parameters',
-                ],
-            ],
-        ],
-    ],
-
     'menu' => [
         'main' => [
             'mautic.focus' => [

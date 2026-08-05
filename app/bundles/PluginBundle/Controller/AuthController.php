@@ -9,8 +9,9 @@ use Mautic\PluginBundle\PluginEvents;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class AuthController extends FormController
+final class AuthController extends FormController
 {
     /**
      * @param string $integration
@@ -29,9 +30,9 @@ class AuthController extends FormController
             $session->set('mautic.integration.postauth.message', ['mautic.integration.notfound', ['%name%' => $integration], 'error']);
             if ($isAjax) {
                 return new JsonResponse(['url' => $this->generateUrl('mautic_integration_auth_postauth', ['integration' => $integration])]);
-            } else {
-                return new RedirectResponse($this->generateUrl('mautic_integration_auth_postauth', ['integration' => $integration]));
             }
+
+            return new RedirectResponse($this->generateUrl('mautic_integration_auth_postauth', ['integration' => $integration]));
         }
 
         try {
@@ -41,9 +42,9 @@ class AuthController extends FormController
             $redirectUrl = $this->generateUrl('mautic_integration_auth_postauth', ['integration' => $integration]);
             if ($isAjax) {
                 return new JsonResponse(['url' => $redirectUrl]);
-            } else {
-                return new RedirectResponse($redirectUrl);
             }
+
+            return new RedirectResponse($redirectUrl);
         }
 
         // check for error
@@ -68,7 +69,7 @@ class AuthController extends FormController
         return new RedirectResponse($this->generateUrl('mautic_integration_auth_postauth', ['integration' => $integration]));
     }
 
-    public function authStatusAction(Request $request, $integration): \Symfony\Component\HttpFoundation\Response
+    public function authStatusAction(Request $request, $integration): Response
     {
         $postAuthTemplate = '@MauticPlugin/Auth/postauth.html.twig';
 
