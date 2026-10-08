@@ -25,12 +25,12 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('project:projects:view')"),
-        new Post(security: "is_granted('project:projects:create')"),
-        new Get(security: "is_granted('project:projects:view')"),
-        new Put(security: "is_granted('project:projects:edit')"),
-        new Patch(security: "is_granted('project:projects:edit')"),
-        new Delete(security: "is_granted('project:projects:delete')"),
+        new GetCollection(security: "is_granted('project:project:view')"),
+        new Post(security: "is_granted('project:project:create')"),
+        new Get(security: "is_granted('project:project:view')"),
+        new Put(security: "is_granted('project:project:edit')"),
+        new Patch(security: "is_granted('project:project:edit')"),
+        new Delete(security: "is_granted('project:project:delete')"),
     ],
     normalizationContext: [
         'groups'                  => ['project:read'],
