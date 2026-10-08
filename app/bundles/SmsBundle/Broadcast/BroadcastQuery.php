@@ -57,14 +57,14 @@ final class BroadcastQuery
                 )
             )
         );
-        $this->excludeStatsRecords($sms->getId());
+        $this->excludeStatsRecords($sms);
         $this->excludeDnc();
         $this->excludeQueue();
 
         return $this->query;
     }
 
-    private function excludeStatsRecords(int $smsId): void
+    private function excludeStatsRecords(Sms $sms): void
     {
         // Do not include leads that have already received text message
         $statQb = $this->entityManager->getConnection()->createQueryBuilder();
@@ -73,11 +73,37 @@ final class BroadcastQuery
             ->where(
                 $statQb->expr()->and(
                     $statQb->expr()->eq('stat.lead_id', 'l.id'),
-                    $statQb->expr()->eq('stat.sms_id', $smsId)
+                    // A contact who received a translation has a stat pointing at that
+                    // translation rather than at this message, so match the whole family.
+                    $statQb->expr()->in('stat.sms_id', $this->getRelatedSmsIds($sms))
                 )
             );
 
         $this->query->andWhere(sprintf('NOT EXISTS (%s)', $statQb->getSQL()));
+    }
+
+    /**
+     * The message itself plus its translations, the way
+     * EmailRepository::getEmailPendingQuery() matches the related IDs of an email. Sms
+     * has no variant metadata, so there are no variants to take into account.
+     *
+     * The subquery is inlined into the main query, so these IDs cannot be bound as
+     * parameters and are cast to integers before they end up in the SQL.
+     *
+     * @return string[]
+     */
+    private function getRelatedSmsIds(Sms $sms): array
+    {
+        $parent = $sms->getTranslationParent() ?? $sms;
+        $ids    = [$parent->getId()];
+
+        foreach ($parent->getTranslationChildren() ?? [] as $child) {
+            $ids[] = $child->getId();
+        }
+
+        $ids = array_map(static fn ($id): string => (string) (int) $id, array_filter($ids));
+
+        return [] === $ids ? [(string) (int) $sms->getId()] : $ids;
     }
 
     private function excludeDnc(): void
