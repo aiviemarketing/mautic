@@ -103,7 +103,10 @@ abstract class ModeratedCommand extends Command
         if (in_array($this->moderationMode, [self::MODE_PID, self::MODE_FLOCK])) {
             // Setup the run directory for lock/pid files
             $this->runDirectory = $this->pathsHelper->getSystemPath('cache').'/../run';
-            if (!file_exists($this->runDirectory) && !@mkdir($this->runDirectory)) {
+            if (!is_dir($this->runDirectory)
+                && !@mkdir($this->runDirectory)
+                && !is_dir($this->runDirectory)
+            ) {
                 // This needs to throw an exception in order to not silently fail when there is an issue
                 throw new \RuntimeException($this->runDirectory.' could not be created.');
             }
