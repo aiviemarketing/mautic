@@ -13,6 +13,31 @@ final class TagApiControllerFunctionalTest extends MauticMysqlTestCase
 {
     use ApiTestUserTrait;
 
+    public function testTagManagerViewPermissionAuthorizesTheLegacyApiList(): void
+    {
+        $apiUser = $this->createApiUserWithPermissions([
+            'tagManager:tagManager' => ['view'],
+        ], 'Tag Manager List API Role');
+        $this->authenticateApiUser($apiUser);
+
+        $this->client->request('GET', '/api/tags');
+
+        $this->assertResponseIsSuccessful($this->client->getResponse()->getContent());
+    }
+
+    public function testContactViewPermissionDoesNotAuthorizeTheLegacyApiList(): void
+    {
+        $apiUser = $this->createApiUserWithPermissions([
+            'lead:leads' => ['viewown', 'viewother'],
+        ], 'Contacts List API Role');
+        $this->authenticateApiUser($apiUser);
+
+        $this->client->request('GET', '/api/tags');
+
+        $response = $this->client->getResponse();
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, $response->getContent());
+    }
+
     public function testTagManagerPermissionsAuthorizeTheLegacyApiWithoutContactAccess(): void
     {
         $apiUser = $this->createApiUserWithPermissions([
