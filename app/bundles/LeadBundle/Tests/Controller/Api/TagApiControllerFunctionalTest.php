@@ -11,6 +11,49 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class TagApiControllerFunctionalTest extends MauticMysqlTestCase
 {
+    use ApiTestUserTrait;
+
+    public function testTagManagerPermissionsAuthorizeTheLegacyApiWithoutContactAccess(): void
+    {
+        $apiUser = $this->createApiUserWithPermissions([
+            'tagManager:tagManager' => ['view', 'create', 'edit', 'delete'],
+        ], 'Tag Manager API Role');
+        $this->authenticateApiUser($apiUser);
+
+        $this->client->request('POST', '/api/tags/new', ['tag' => 'tag-manager-api']);
+        $createResponse = $this->client->getResponse();
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED, $createResponse->getContent());
+        $createPayload = json_decode($createResponse->getContent(), true);
+        $tagId         = $createPayload['tag']['id'];
+
+        $this->client->request('GET', '/api/tags/'.$tagId);
+        $this->assertResponseIsSuccessful($this->client->getResponse()->getContent());
+
+        $this->client->request('PATCH', '/api/tags/'.$tagId.'/edit', ['tag' => 'tag-manager-api-edited']);
+        $this->assertResponseIsSuccessful($this->client->getResponse()->getContent());
+
+        $this->client->request('DELETE', '/api/tags/'.$tagId.'/delete');
+        $this->assertResponseIsSuccessful($this->client->getResponse()->getContent());
+    }
+
+    public function testContactViewPermissionDoesNotAuthorizeTheLegacyTagsApi(): void
+    {
+        $tag = new Tag('tag-manager-only');
+        $this->em->persist($tag);
+        $this->em->flush();
+
+        $apiUser = $this->createApiUserWithPermissions([
+            'lead:leads' => ['viewown', 'viewother'],
+        ], 'Contacts API Role');
+        $this->authenticateApiUser($apiUser);
+
+        $this->client->request('GET', '/api/tags/'.$tag->getId());
+
+        $response = $this->client->getResponse();
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, $response->getContent());
+    }
+
     public function testTagWorkflow(): void
     {
         $tag1Payload = ['tag' => 'test_tag'];

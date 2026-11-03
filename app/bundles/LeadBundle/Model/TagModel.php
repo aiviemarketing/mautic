@@ -75,7 +75,8 @@ class TagModel extends FormModel
 
     public function getPermissionBase(): string
     {
-        return 'lead:leads';
+        // @aivie: Align the legacy Tags API with the dedicated Tag Manager permission used by the UI and API v2.
+        return 'tagManager:tagManager';
     }
 
     /**
